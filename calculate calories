@@ -1,0 +1,191 @@
+menu = [
+    '1 - Гречневая каша',
+    '2 - Рис белый отварной',
+    '3 - Рисовая каша на молоке',
+    '4 - Пшёнка на воде',
+    '5 - Овсянка на молоке',
+    '6 - Овсянка на воде',
+    '7 - Отварной картофель',
+    '8 - Суп харчо с мясом',
+    '9 - Суп гороховый',
+    '10 - Суп солянка',
+    '11 - Суп грибной',
+    '12 - Суп с фрикадельками',
+    '13 - Суп рыбный',
+    '14 - Суп овощной',
+    '15 - Котлеты говяжьи',
+    '16 - Котлеты куриные',
+    '17 - Картофель',
+    '18 - Рис',
+    '19 - Ломтик белого хлеба',
+    '20 - Ломтик черного хлеба'
+]
+
+calories = [
+    132, 
+    116, 
+    90, 
+    102, 
+    88, 
+    82, 
+    77,
+    75,
+    66,
+    64,
+    50,
+    48,
+    46,
+    43,
+    185,
+    191,
+    76,
+    115,
+    80,
+    60
+] 
+
+activity_list = [
+    "1 - сидячий образ жизни",
+    "2 - легкая активность",
+    "3 - умеренная активность",
+    "4 - высокая активность"
+]
+
+user = {}
+
+def user_registration():
+    print("Регистрация пользователя")
+    user['name'] = input("Ваше имя: ")
+    user['gender'] = int(input("Ваш пол: \n 1 - женский \n 2 - мужской \n"))
+    user['age'] = int(input("Ваш возраст: "))
+    user['weight'] = int(input("Ваш вес (кг): "))
+    user['height'] = int(input("Ваш рост (см): "))
+    user['activity'] = int(input(f"Выберите уровень активности: \n{activity_list}\n")) - 1
+    
+    print("\nВаш профиль:")
+    print(f"Имя: {user['name']}")
+    print(f"Пол: {'женский' if user['gender'] == 1 else 'мужской'}")
+    print(f"Возраст: {user['age']} лет")
+    print(f"Вес: {user['weight']} кг")
+    print(f"Рост: {user['height']} см")
+    print(f"Уровень активности: {activity_list[user['activity']]}")
+    
+    show_main_menu()
+
+def menu_calories():
+    print("\nМеню блюд:")
+    for item in menu:
+        print(item)
+    try:
+        choice = int(input("\nВведите номер блюда: ")) - 1  
+        if 0 <= choice < len(menu):
+            print(f"\n{menu[choice]} — {calories[choice]} ккал на 100 г")
+        else:
+            print("Неверный номер блюда!")
+            choice = int(input("\nВведите номер блюда: ")) - 1  
+            if 0 <= choice < len(menu):
+                print(f"\n{menu[choice]} — {calories[choice]} ккал на 100 г")
+
+    except ValueError:
+        print("Введите число!")
+        choice = int(input("\nВведите номер блюда: ")) - 1  
+        if 0 <= choice < len(menu):
+            print(f"\n{menu[choice]} — {calories[choice]} ккал на 100 г")
+
+
+def calculate_calories():
+ 
+    kfa = [1.2, 1.375, 1.55, 1.725][user['activity']]
+    
+    if user['gender'] == 1:
+        bmr = (user['weight'] * 10) + (user['height'] * 6.25) - (user['age'] * 5) - 161
+    else:
+        bmr = (user['weight'] * 10) + (user['height'] * 6.25) - (user['age'] * 5) + 5
+    
+    daily_calories = bmr * kfa
+    print(f"\n{user['name']}, ваша дневная норма калорий: {daily_calories:.0f} ккал")
+   
+   
+def calculate_daily_dishes():
+    global calories 
+    print("\nЗапись приёма пищи")
+    print("\nМеню блюд:")
+    for item in menu:
+        print(item)
+    print("Выберите блюда (вводите номера по одному, для завершения введите 0):")
+    
+    selected_dishes = []  
+    general_calories = 0  
+    
+    while True:
+        try:
+            choice = int(input("Номер блюда (0 - завершить): "))
+            if choice == 0:
+                break  
+            
+            index = choice - 1  
+            
+            if 0 <= index < len(menu):
+                weight = int(input(f"Введите вес блюда '{menu[index]}' в граммах: "))
+                
+                dish_calories = calories[index] * (weight / 100)
+                
+                selected_dishes.append({
+                    'index': index,
+                    'weight': weight,
+                    'calories': dish_calories
+                })
+                general_calories += dish_calories
+                
+                print(f"Добавлено: {menu[index]} ({weight} - {dish_calories:.1f} ккал)")
+            else:
+                print("Неверный номер блюда! Введите номер блюда из списка")
+                
+        except ValueError:
+            print("Пожалуйста, введите число!")
+    
+    if selected_dishes:
+        print("\nВыбранные блюда:")
+        for item in selected_dishes:
+            index = item['index']
+            weight = item['weight']
+            calories = item['calories']
+            print(f"- {menu[index]} - {weight} - ({calories:.1f} ккал)")
+        
+        print(f"\nОбщая калорийность: {general_calories:.1f} ккал")
+    else:
+        print("Вы не выбрали ни одного блюда.")
+    
+    show_main_menu()
+
+
+def show_main_menu():
+    print("\nВыберите действие:")
+    print("1 - Изменить профиль")
+    print("2 - Записать приём пищи")
+    print("3 - Рассчитать дневную норму калорий")
+    print("4 - Посмотреть меню блюд")
+    print("5 - Выход")
+    
+    try:
+        choice = int(input("Ваш выбор: "))
+        if choice == 1:
+            user_registration()
+        elif choice == 2:
+            calculate_daily_dishes()
+        elif choice == 3:
+            calculate_calories()
+            show_main_menu()
+        elif choice == 4:
+            menu_calories()
+            show_main_menu()
+        elif choice == 5:
+            print("До свидания!")
+        else:
+            print("Неверный выбор!")
+            show_main_menu()
+    except ValueError:
+        print("Введите число!")
+        show_main_menu()
+
+user_registration()   
